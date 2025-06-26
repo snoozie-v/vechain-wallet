@@ -13,7 +13,7 @@ const App: React.FC = () => {
       darkMode={false}
       language="en"
       dappKit={{
-        allowedWallets: ['veworld'], // Focus on VeWorld
+        allowedWallets: ['veworld', 'sync2'], // Focus on VeWorld
       }}
     >
       <WalletConnection />

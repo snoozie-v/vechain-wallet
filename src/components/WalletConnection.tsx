@@ -14,6 +14,9 @@ const WalletConnection: React.FC = () => {
       <h1>VeChain Wallet Connection</h1>
       <WalletButton />
       {account && (
+        <button onClick={disconnect}>Disconnect</button>
+      )}
+      {account && (
         <p>The connected wallet is: {}</p>
       )}
     </div>
