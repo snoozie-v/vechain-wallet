@@ -9,11 +9,12 @@ const App: React.FC = () => {
     <VeChainKitProvider
       network={{
         type: 'test',
+        nodeUrl: 'https://testnet.vechain.org/',
       }}
       darkMode={false}
       language="en"
       dappKit={{
-        allowedWallets: ['veworld', 'sync2'], // Focus on VeWorld
+        allowedWallets: ['veworld',], // Focus on VeWorld
       }}
     >
       <WalletConnection />
