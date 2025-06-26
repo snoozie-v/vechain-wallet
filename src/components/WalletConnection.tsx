@@ -17,7 +17,14 @@ const WalletConnection: React.FC = () => {
         <button onClick={disconnect}>Disconnect</button>
       )}
       {account && (
-        <p>The connected wallet is: {account.address} {account.domain} { account.image} {account.isLoadingMetadata} </p>
+        <p>The connected wallet is: address {account.address} 
+        <br />
+        domain {account.domain} 
+        <br />
+        image { account.image} 
+        <br />
+        is loading metadata?
+        {account.isLoadingMetadata} </p>
       )}
     </div>
   );
