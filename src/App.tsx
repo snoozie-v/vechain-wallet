@@ -2,6 +2,8 @@ import React from 'react';
 import { VeChainKitProvider } from '@vechain/vechain-kit';
 import WalletConnection from './components/WalletConnection';
 
+console.log('test', 'test');
+
 const App: React.FC = () => {
   return (
     <VeChainKitProvider
@@ -9,11 +11,11 @@ const App: React.FC = () => {
         type: 'test',
       }}
       darkMode={false}
-      language='en'
+      language="en"
       dappKit={{
-        allowedWallets: ['sync2', 'veworld'], // Corrected syntax
+        allowedWallets: ['veworld'], // Focus on VeWorld
       }}
-      >
+    >
       <WalletConnection />
     </VeChainKitProvider>
   );

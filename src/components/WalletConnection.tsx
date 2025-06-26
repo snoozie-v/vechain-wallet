@@ -1,5 +1,5 @@
 import { WalletButton, useWallet } from "@vechain/vechain-kit";
-import React, { useState } from "react"
+import React, { useState } from "react";
 
 const WalletConnection: React.FC = () => {
   const { account, disconnect } = useWallet();
@@ -10,11 +10,14 @@ const WalletConnection: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center' }}>
+    <div style={{ padding: "20px", textAlign: "center" }}>
       <h1>VeChain Wallet Connection</h1>
       <WalletButton />
+      {account && (
+        <p>The connected wallet is: {account}</p>
+      )}
     </div>
   );
 };
 
-  export default WalletConnection;
+export default WalletConnection;
