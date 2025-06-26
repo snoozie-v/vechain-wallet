@@ -8,7 +8,7 @@ const WalletConnection: React.FC = () => {
   const handleEnterSuccess = () => {
     setStatusTrigger((prev) => prev + 1); // Trigger status refresh
   };
-
+  console.log(account)
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
       <h1>VeChain Wallet Connection</h1>
@@ -17,7 +17,7 @@ const WalletConnection: React.FC = () => {
         <button onClick={disconnect}>Disconnect</button>
       )}
       {account && (
-        <p>The connected wallet is: {account.address}</p>
+        <p>The connected wallet is: {account.address} {account.domain} { account.image} {account.isLoadingMetadata} </p>
       )}
     </div>
   );

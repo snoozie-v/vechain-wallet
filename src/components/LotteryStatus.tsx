@@ -1,12 +1,6 @@
 //  import React from 'react';
 // import { useLotteryData } from '../hooks/useLotteryData';
 
-// interface LotteryStatusProps {
-//   lotteryAddress: string;
-//   statusTrigger: number;
-//   decimals: number;
-// }
-
 // const LotteryStatus: React.FC<LotteryStatusProps> = ({ lotteryAddress, statusTrigger, decimals }) => {
 //   const { status, statusError } = useLotteryData(statusTrigger);
 
