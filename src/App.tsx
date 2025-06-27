@@ -1,24 +1,15 @@
 import React from 'react';
-import { VeChainKitProvider } from '@vechain/vechain-kit';
-import WalletConnection from './components/WalletConnection';
 
-console.log('test', 'test');
+import WalletConnection from './components/WalletConnection';
+import LotteryStatus from './components/LotteryStatus';
+
 
 const App: React.FC = () => {
   return (
-    <VeChainKitProvider
-      network={{
-        type: 'test',
-        nodeUrl: 'https://testnet.vechain.org/',
-      }}
-      darkMode={false}
-      language="en"
-      dappKit={{
-        allowedWallets: ['veworld',], // Focus on VeWorld
-      }}
-    >
-      <WalletConnection />
-    </VeChainKitProvider>
+      <div>
+          <LotteryStatus />
+          <WalletConnection />
+      </div>
   );
 };
 
