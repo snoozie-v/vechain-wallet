@@ -8,7 +8,7 @@ const WalletConnection: React.FC = () => {
   const handleEnterSuccess = () => {
     setStatusTrigger((prev) => prev + 1); // Trigger status refresh
   };
-  console.log(account)
+
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
       <h1>VeChain Wallet Connection</h1>
