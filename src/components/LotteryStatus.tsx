@@ -32,7 +32,7 @@ const LotteryStatus: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <div style={{ padding: "20px", textAlign: "center" }}>
       <h1>Lottery Status</h1>
       <button onClick={handleLotteryStatus} disabled={loading}>
         {loading ? "Loading..." : "Get Lottery Status"}

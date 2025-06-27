@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
-import { useWallet, useSendTransaction, getConfig, useTransactionModal, TransactionModal } from "@vechain/vechain-kit";
+import { useWallet, useSendTransaction, useTransactionModal, TransactionModal } from "@vechain/vechain-kit";
 import { ThorClient } from "@vechain/sdk-network";
 import { ABIContract } from "@vechain/sdk-core";
 import lotteryABI from "../abis/lotteryABI";
 import shtABI from "../abis/shtABI";
 import { LOTTERY_ADDRESS, TOKEN_ADDRESS } from "../constants/addresses";
 import { ENTRY_AMOUNT, APPROVAL_AMOUNT, DECIMALS } from "../constants/amounts";
+
 const thor = ThorClient.fromUrl("https://testnet.vechain.org");
 
 const EnterLotteryForm = () => {
@@ -13,6 +14,17 @@ const EnterLotteryForm = () => {
     const [allowance, setAllowance] = React.useState(0n);
     const [isLoading, setIsLoading] = React.useState(false);
     const [hasSufficientAllowance, setHasSufficientAllowance] = React.useState(false);
+
+    // Format allowance for human-readable display
+    const formatAllowance = (allowance) => {
+        if (allowance === 0n) return "0";
+        const divisor = BigInt(10 ** DECIMALS);
+        const whole = allowance / divisor;
+        const fraction = allowance % divisor;
+        if (fraction === 0n) return whole.toString();
+        const fractionStr = fraction.toString().padStart(DECIMALS, "0").slice(0, 4);
+        return `${whole}.${fractionStr}`;
+    };
 
     // Check allowance when account changes
     async function checkAllowance() {
@@ -25,9 +37,11 @@ const EnterLotteryForm = () => {
             console.log("Checking allowance for:", account.address, LOTTERY_ADDRESS);
             const tokenContract = thor.contracts.load(TOKEN_ADDRESS, shtABI);
             const allowed = await tokenContract.read.allowance(account.address, LOTTERY_ADDRESS);
-            const allowanceValue = BigInt(allowed.toString());
-            console.log("Allowance retrieved:", allowanceValue);
+            const allowanceValue = BigInt(allowed.toString()); // Raw value in wei
+            console.log("Allowance retrieved (raw):", allowanceValue);
+            console.log("Allowance formatted:", formatAllowance(allowanceValue));
             setAllowance(allowanceValue);
+            setHasSufficientAllowance(allowanceValue >= ENTRY_AMOUNT);
             return allowanceValue;
         } catch (err) {
             console.error("Failed to check allowance:", err);
@@ -61,6 +75,23 @@ const EnterLotteryForm = () => {
         }
     }, [account?.address]);
 
+    // Encode enter function data
+    const encodedEnterData = React.useMemo(() => {
+        if (!account?.address) {
+            console.log("No account address, cannot encode enter data");
+            return null;
+        }
+        try {
+            const contract = ABIContract.ofAbi(lotteryABI);
+            const encoded = contract.encodeFunctionInput("enter", []).toString();
+            console.log("Encoded enter data:", encoded);
+            return encoded;
+        } catch (err) {
+            console.error("Failed to encode enter data:", err);
+            return null;
+        }
+    }, [account?.address]);
+
     const {
         sendTransaction,
         status,
@@ -81,55 +112,42 @@ const EnterLotteryForm = () => {
             return;
         }
 
-        // Check if approval is necessary
         const currentAllowance = await checkAllowance();
         if (currentAllowance >= APPROVAL_AMOUNT) {
             console.log("Sufficient allowance already exists:", currentAllowance);
+            setHasSufficientAllowance(true);
             return;
         }
 
         setIsLoading(true);
         try {
             console.log("Sending approve transaction...");
-            // Estimate gas for the transaction
-            const gasEstimate = await thor.transactions.estimateGas([{
-                to: TOKEN_ADDRESS,
-                value: "0x0",
-                data: encodedApproveData,
-            }], account.address);
-            console.log("Estimated gas:", gasEstimate);
+            const gasEstimate = await thor.transactions.estimateGas(
+                [{
+                    to: TOKEN_ADDRESS,
+                    value: "0x0",
+                    data: encodedApproveData,
+                }],
+                account.address
+            );
+            console.log("Estimated gas for approve:", gasEstimate);
 
             const txResponse = await sendTransaction([{
                 to: TOKEN_ADDRESS,
                 value: "0x0",
                 data: encodedApproveData,
                 comment: "Approve lottery contract to spend tokens",
-                gas: gasEstimate.totalGas, // Use estimated gas
+                gas: gasEstimate.totalGas,
             }]);
 
-            console.log("Transaction sent:", txResponse);
+            console.log("Approve transaction sent:", txResponse);
+            await checkAllowance(); // Update allowance after approval
         } catch (err) {
             console.error("Approve transaction failed:", err);
         } finally {
             setIsLoading(false);
         }
     }
-
-        const encodedEnterData = React.useMemo(() => {
-        if (!account?.address) {
-            console.log("No account address, cannot encode enter data");
-            return null;
-        }
-        try { 
-            const contract = ABIContract.ofAbi(lotteryABI);
-            const encoded = contract.encodeFunctionInput("enter", []).toString();
-            console.log("Encoded enter data:", encoded);
-            return encoded;
-
-        } catch (err) {
-            console.error("Failed to encode enter data:", err);
-            return null;
-        }}, [account?.address]);
 
     async function enterLottery() {
         if (!account?.address) {
@@ -178,28 +196,28 @@ const EnterLotteryForm = () => {
     }
 
     return (
-        <div>
+        <div style={{ padding: "20px", textAlign: "center" }}>
             <h1>Enter Lottery</h1>
-            <p>Coming soon</p>
             <button onClick={checkAllowance} disabled={isLoading || !account?.address}>
                 Check Allowance
             </button>
-            <p>Allowance: {allowance.toString() }</p>
+            <p>Allowance: {formatAllowance(allowance)} tokens</p>
             <button
                 onClick={approveLottery}
-                disabled={isLoading || isTransactionPending || !encodedApproveData || !account?.address}
+                disabled={isLoading || isTransactionPending || !encodedApproveData || !account?.address || hasSufficientAllowance}
             >
                 Approve Lottery
+            </button>
+            <button
+                onClick={enterLottery}
+                disabled={isLoading || isTransactionPending || !encodedEnterData || !account?.address || !hasSufficientAllowance}
+            >
+                Enter Lottery
             </button>
             {isLoading && <div>Loading...</div>}
             {status === "pending" && <div>Transaction Pending...</div>}
             {error && <div>Error: {error.message || error.reason || JSON.stringify(error)}</div>}
             {txReceipt && <div>Transaction Receipt: {JSON.stringify(txReceipt)}</div>}
-            <button 
-                onClick={enterLottery}
-            >
-                Enter Lottery
-              </button>
         </div>
     );
 };

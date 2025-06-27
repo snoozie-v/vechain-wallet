@@ -17,9 +17,7 @@ const WalletConnection: React.FC = () => {
         <button onClick={disconnect}>Disconnect</button>
       )}
       {account && (
-        <p>The connected wallet is: address {account.address} 
-        <br />
-        domain {account.domain || "none"}  </p>
+        <p>The connected wallet is: address {account.address} </p>
       )}
     </div>
   );
