@@ -21,7 +21,7 @@ interface LotteryStatusData {
   uniquePlayerCount?: string;
   lastWinner?: string;
   lastWinningAmount?: string;
-  burnAmount?: string; // New field for 10% of balance
+  burnAmount?: string;
 }
 
 // Get lottery status
@@ -37,8 +37,8 @@ const getLotteryStatus = async (): Promise<LotteryStatusData | null> => {
 
     const formattedBalance = Math.floor(Number(balance) / 10 ** DECIMALS);
     const formattedWinningAmount = Math.floor(Number(lastWinningAmount) / 10 ** DECIMALS);
-    const burnAmount = (formattedBalance * 0.1).toFixed(0); // Calculate 10% of balance
-    
+    const burnAmount = (formattedBalance * 0.1).toFixed(0); 
+
     return {
       playerCount: playerCount.toString(),
       uniquePlayerCount: uniquePlayerCount.toString(),
@@ -117,10 +117,12 @@ const EnterLotteryForm = () => {
 
   // Initial data fetch
   useEffect(() => {
+    // Always fetch status on mount
+    handleLotteryStatus();
+    // Fetch wallet-dependent data only if account is connected
     if (account?.address) {
       checkAllowance();
       getWinProbability();
-      handleLotteryStatus();
     }
   }, [account?.address, handleLotteryStatus]);
 
@@ -191,7 +193,6 @@ const EnterLotteryForm = () => {
   // Handle successful entry
   useEffect(() => {
     if (txReceipt && status === "success") {
-      // Refresh all data points after successful entry
       checkAllowance();
       getWinProbability();
       handleLotteryStatus();
@@ -200,6 +201,7 @@ const EnterLotteryForm = () => {
 
   return (
     <div style={{ maxWidth: "500px", margin: "20px auto", padding: "20px", border: "1px solid #ccc", borderRadius: "8px" }}>
+      <h1 style={{ fontSize: "24px", marginBottom: "16px", textAlign: "center" }}>Vechain Lottery</h1>
       {/* Lottery Status Section */}
       <div style={{ marginBottom: "24px", background: "rgba(248, 249, 250, 0.7)", padding: "16px", borderRadius: "8px" }}>
         <h2 style={{ fontSize: "18px", marginBottom: "12px", textAlign: "center" }}>Lottery Status</h2>
@@ -210,7 +212,8 @@ const EnterLotteryForm = () => {
 
             </p>
             <p>
-              <strong>To be burnt:</strong> {lotteryStatus.burnAmount ?? "N/A"}
+              <strong>To be Burnt:</strong> {lotteryStatus.burnAmount ?? "N/A"} SHT{" "}
+
             </p>
             <p>
               <strong>Total Entries:</strong> {lotteryStatus.playerCount ?? "N/A"}
@@ -223,6 +226,7 @@ const EnterLotteryForm = () => {
               {lotteryStatus.lastWinner && lotteryStatus.lastWinner !== "0x0000000000000000000000000000000000000000"
                 ? `${lotteryStatus.lastWinner.slice(0, 6)}...${lotteryStatus.lastWinner.slice(-4)}`
                 : "None"}{" "}
+
             </p>
             <p>
               <strong>Last Prize:</strong> {lotteryStatus.lastWinningAmount ?? "N/A"} SHT
