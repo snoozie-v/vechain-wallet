@@ -19,6 +19,7 @@
     "buffer": "^6.0.3",
     "js-base64": "^3.7.7",
     "react": "^19.1.0",
+    "react-confetti": "^6.4.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {

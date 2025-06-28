@@ -7,9 +7,8 @@ import LotteryStatus from './components/LotteryStatus';
 const App: React.FC = () => {
   return (
       <div>
-          <LotteryStatus />
-          <EnterLotteryForm />
           <WalletConnection />
+          <EnterLotteryForm />
       </div>
   );
 };

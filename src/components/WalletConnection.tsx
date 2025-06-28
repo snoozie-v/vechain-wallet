@@ -11,13 +11,10 @@ const WalletConnection: React.FC = () => {
 
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
-      <h1>VeChain Wallet Connection</h1>
+      <h1>SHT Lotto</h1>
       <WalletButton />
       {account && (
         <button onClick={disconnect}>Disconnect</button>
-      )}
-      {account && (
-        <p>The connected wallet is: address {account.address} </p>
       )}
     </div>
   );
