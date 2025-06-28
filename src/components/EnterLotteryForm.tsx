@@ -201,7 +201,6 @@ const EnterLotteryForm = () => {
 
   return (
     <div style={{ maxWidth: "500px", margin: "20px auto", padding: "20px", border: "1px solid #ccc", borderRadius: "8px" }}>
-      <h1 style={{ fontSize: "24px", marginBottom: "16px", textAlign: "center" }}>Vechain Lottery</h1>
       {/* Lottery Status Section */}
       <div style={{ marginBottom: "24px", background: "rgba(248, 249, 250, 0.7)", padding: "16px", borderRadius: "8px" }}>
         <h2 style={{ fontSize: "18px", marginBottom: "12px", textAlign: "center" }}>Lottery Status</h2>
