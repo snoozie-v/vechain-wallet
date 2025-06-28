@@ -21,6 +21,7 @@ interface LotteryStatusData {
   uniquePlayerCount?: string;
   lastWinner?: string;
   lastWinningAmount?: string;
+  burnAmount?: string; // New field for 10% of balance
 }
 
 // Get lottery status
@@ -36,12 +37,15 @@ const getLotteryStatus = async (): Promise<LotteryStatusData | null> => {
 
     const formattedBalance = Math.floor(Number(balance) / 10 ** DECIMALS);
     const formattedWinningAmount = Math.floor(Number(lastWinningAmount) / 10 ** DECIMALS);
+    const burnAmount = (formattedBalance * 0.1).toFixed(0); // Calculate 10% of balance
+    
     return {
       playerCount: playerCount.toString(),
       uniquePlayerCount: uniquePlayerCount.toString(),
       balance: formattedBalance.toString(),
       lastWinner: lastWinner.toString(),
       lastWinningAmount: formattedWinningAmount.toString(),
+      burnAmount: burnAmount.toString(),
     };
   } catch (error) {
     console.error("Error in getLotteryStatus:", error);
@@ -196,8 +200,6 @@ const EnterLotteryForm = () => {
 
   return (
     <div style={{ maxWidth: "500px", margin: "20px auto", padding: "20px", border: "1px solid #ccc", borderRadius: "8px" }}>
-      <h1 style={{ fontSize: "24px", marginBottom: "16px", textAlign: "center" }}>Vechain Lottery</h1>
-
       {/* Lottery Status Section */}
       <div style={{ marginBottom: "24px", background: "rgba(248, 249, 250, 0.7)", padding: "16px", borderRadius: "8px" }}>
         <h2 style={{ fontSize: "18px", marginBottom: "12px", textAlign: "center" }}>Lottery Status</h2>
@@ -205,9 +207,10 @@ const EnterLotteryForm = () => {
           <div style={{ textAlign: "center", fontSize: "14px" }}>
             <p>
               <strong>Prize Pool:</strong> {lotteryStatus.balance ?? "N/A"} SHT{" "}
-              <span title="Current total prize pool." style={{ cursor: "help" }}>
-                ℹ️
-              </span>
+
+            </p>
+            <p>
+              <strong>To be burnt:</strong> {lotteryStatus.burnAmount ?? "N/A"}
             </p>
             <p>
               <strong>Total Entries:</strong> {lotteryStatus.playerCount ?? "N/A"}
@@ -220,9 +223,6 @@ const EnterLotteryForm = () => {
               {lotteryStatus.lastWinner && lotteryStatus.lastWinner !== "0x0000000000000000000000000000000000000000"
                 ? `${lotteryStatus.lastWinner.slice(0, 6)}...${lotteryStatus.lastWinner.slice(-4)}`
                 : "None"}{" "}
-              <span title="Address of the most recent winner." style={{ cursor: "help" }}>
-                ℹ️
-              </span>
             </p>
             <p>
               <strong>Last Prize:</strong> {lotteryStatus.lastWinningAmount ?? "N/A"} SHT
