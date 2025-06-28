@@ -60,11 +60,10 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Optional: Add a semi-transparent container for the form */
-.lottery-form-container {
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 800px;
-  margin: 20px auto;
+
+footer {
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
