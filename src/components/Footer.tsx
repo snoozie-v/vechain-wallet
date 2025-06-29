@@ -1,14 +1,17 @@
 import React from "react";
+import snoozie from "../assets/snoozie.jpeg";
 
 const Footer: React.FC = () => {
   return (
     <footer>
-      <p>
-        Have fun & Burn SHT 
-    </p>
+      <img
+        src={snoozie}
+        alt="snoozie"
+        style={{ height: "69px", width: "69px"}}
+      />
+      <p>Have fun & Burn SHT</p>
     </footer>
   );
 };
 
 export default Footer;
-

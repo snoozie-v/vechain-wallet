@@ -61,13 +61,14 @@ const EnterLotteryForm = () => {
   const [winPercentage, setWinPercentage] = React.useState(0);
   const [lotteryStatus, setLotteryStatus] = React.useState<LotteryStatusData | null>(null);
   const [statusError, setStatusError] = React.useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = React.useState(false);
   const { sendTransaction, status, txReceipt, error } = useSendTransaction({
     signerAccountAddress: account?.address ?? "",
   });
 
   // Format allowance for display
-  const formatAllowance = (allowance: bigint) =>
-    allowance === 0n ? "0" : `${(Number(allowance) / 10 ** DECIMALS).toFixed(4)}`;
+const formatAllowance = (allowance: bigint) =>
+  allowance === 0n ? "0" : Math.floor(Number(allowance) / Number(ENTRY_AMOUNT)).toString();
 
   // Check allowance
   const checkAllowance = async () => {
@@ -193,9 +194,16 @@ const EnterLotteryForm = () => {
   // Handle successful entry
   useEffect(() => {
     if (txReceipt && status === "success") {
+      console.log("txReceipt:", txReceipt.meta, txReceipt.meta.txID);
+      setShowConfetti(true); // Show confetti
+      const timeout = setTimeout(() => {
+      setShowConfetti(false); // Hide confetti after 10 seconds
+      }, 10000); // 10,000 ms = 10 seconds
       checkAllowance();
       getWinProbability();
       handleLotteryStatus();
+
+      return () => clearTimeout(timeout); 
     }
   }, [txReceipt, status]);
 
@@ -261,40 +269,20 @@ const EnterLotteryForm = () => {
         </div>
       ) : (
         <>
-          <div style={{ marginBottom: "16px" }}>
+          <div style={{ textAlign: "center", marginBottom: "16px" }}>
             <p>
-              <strong>Your Win Probability:</strong> {winPercentage}%{" "}
-              <span title="Your chance of winning based on entries." style={{ cursor: "help" }}>
-                ℹ️
-              </span>
+              <strong>Your Current Win Probability:</strong> {winPercentage}%{" "}
             </p>
             <div style={{ width: "100%", background: "#eee", borderRadius: "4px", height: "10px", marginBottom: "12px" }}>
               <div
                 style={{ width: `${winPercentage}%`, background: "#28a745", height: "100%", borderRadius: "4px" }}
               />
             </div>
-            <p>
-              <strong>Allowance:</strong> {formatAllowance(allowance)} SHT{" "}
-              <span title="Tokens the lottery can spend on your behalf." style={{ cursor: "help" }}>
-                ℹ️
-              </span>
+            <p style={{ textAlign: "center" }}>
+              <strong>Approved up to</strong> {formatAllowance(allowance)} More Entries{" "}
             </p>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <button
-              aria-label="Check token allowance"
-              style={{
-                background: "#6c757d",
-                color: "white",
-                padding: "10px",
-                borderRadius: "4px",
-                cursor: isLoading ? "not-allowed" : "pointer",
-              }}
-              onClick={checkAllowance}
-              disabled={isLoading}
-            >
-              Check Allowance
-            </button>
             <button
               aria-label="Approve lottery contract"
               style={{
@@ -323,6 +311,7 @@ const EnterLotteryForm = () => {
             >
               Enter Lottery
             </button>
+            <h4 style={{ textAlign: "center" }}>Enter for 10k $SHT</h4>
           </div>
           {isLoading && (
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "10px" }}>
@@ -347,16 +336,16 @@ const EnterLotteryForm = () => {
           )}
           {status === "pending" && <div style={{ marginTop: "10px" }}>Transaction Pending...</div>}
           {txReceipt && (
-            <div style={{ color: "green", marginTop: "10px" }}>
+            <div style={{ textAlign: "center", color: "green", marginTop: "10px" }}>
               Success!{" "}
               <a
-                href={`https://explore-testnet.vechain.org/transactions/${txReceipt.id}`}
+                href={`https://explore-testnet.vechain.org/transactions/${txReceipt.meta.txID}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 View on Explorer
               </a>
-              <Confetti />
+              {showConfetti && <Confetti />}
             </div>
           )}
           {error && (
