@@ -4,7 +4,7 @@ import lotteryABI from "../abis/lotteryABI";
 import { LOTTERY_ADDRESS } from "../constants/addresses";
 
 // Initialize ThorClient
-const thor = ThorClient.fromUrl("https://testnet.vechain.org");
+const thor = ThorClient.fromUrl("https://mainnet.vechain.org");
 
 // Load the lottery contract
 const lotteryContract = thor.contracts.load(LOTTERY_ADDRESS, lotteryABI);

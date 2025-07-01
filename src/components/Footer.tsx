@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
         alt="snoozie"
         style={{ height: "69px", width: "69px"}}
       />
-      <p>Have fun & Burn SHT</p>
+      <p>Have Fun || Burn SHT</p>
     </footer>
   );
 };

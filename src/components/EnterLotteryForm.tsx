@@ -9,7 +9,7 @@ import { LOTTERY_ADDRESS, TOKEN_ADDRESS } from "../constants/addresses";
 import { ENTRY_AMOUNT, APPROVAL_AMOUNT, DECIMALS } from "../constants/amounts";
 
 // Initialize ThorClient
-const thor = ThorClient.fromUrl("https://testnet.vechain.org");
+const thor = ThorClient.fromUrl("https://mainnet.vechain.org");
 
 // Load the lottery contract
 const lotteryContract = thor.contracts.load(LOTTERY_ADDRESS, lotteryABI);

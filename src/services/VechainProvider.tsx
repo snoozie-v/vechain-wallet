@@ -6,7 +6,7 @@
       return (
     <VeChainKitProvider
       feeDelegation={{
-        delegatorUrl: "https://sponsor-testnet.vechain.energy/by/441",
+        delegatorUrl: "https://sponsor-mainnet.vechain.energy/by/441",
         // set to false if you want to delegate ONLY social login transactions
         // social login transactions sponsorship is currently mandatory
         delegateAllTransactions: false,
@@ -32,7 +32,7 @@
       darkMode={false}
       language="en"
       network={{
-        type: "test",
+        type: "main",
       }}
     >
     {children}
