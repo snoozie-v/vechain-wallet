@@ -339,7 +339,7 @@ const formatAllowance = (allowance: bigint) =>
             <div style={{ textAlign: "center", color: "green", marginTop: "10px" }}>
               Success!{" "}
               <a
-                href={`https://explore-testnet.vechain.org/transactions/${txReceipt.meta.txID}`}
+                href={`https://vechainstats.com/transaction/${txReceipt.meta.txID}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
