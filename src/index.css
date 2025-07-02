@@ -1,71 +1,143 @@
-/* Set background image on body or a root container */
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  position: relative;
-  background: #000; /* Fallback color */
-  font-size: 18px; /* Increased base font size (default is ~16px) */
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif; /* From your :root */
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.87); /* High-contrast text */
-}
+@layer vechain-kit, host-app;
 
-/* Root container for the app */
-#root {
-  min-height: 100vh;
-  position: relative;
-  z-index: 1; /* Ensure content is above the background */
-}
+/* Import Tailwind v4 */
+@import "tailwindcss";
 
-/* Background image with semi-transparent overlay */
-#root::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url('./assets/sht.png'); /* Path to your image */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.4; /* Adjust opacity (0 = fully transparent, 1 = fully opaque) */
-  z-index: -1; /* Place behind content */
-}
+/* Your custom styles */
+@layer host-app {
+  /* Custom base styles */
+  html {
+    font-family: Inter, system-ui, sans-serif;
+    height: 100%;
+  }
 
-/* Ensure text is readable */
-h1, h2, p {
-  color: white; /* High-contrast text */
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); /* Shadow for readability */
-}
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    position: relative;
+    font-size: 18px;
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.87);
+  }
 
-/* Style buttons for visibility */
-button {
-  background-color: #007bff; /* Solid background for buttons */
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
+  #root {
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #1f2937 0%, #1e3a8a 50%, #7c3aed 100%);
+  }
 
-button:hover {
-  background-color: #0056b3;
-}
+  #root::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('./assets/sht.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.4;
+    z-index: -1;
+  }
 
-button:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-}
+  h1, h2, h3, h4, h5, h6, p {
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  }
 
+  footer {
+    margin-top: auto;
+  }
 
-footer {
-  height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 30px;
+  /* Custom blob animation - not available in Tailwind */
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+
+  .animation-delay-1000 {
+    animation-delay: 1s;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+
+  /* Custom shadow utilities */
+  .shadow-3xl {
+    box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Enhanced backdrop blur support */
+  .backdrop-blur-xs {
+    backdrop-filter: blur(2px);
+  }
+
+  .backdrop-blur-3xl {
+    backdrop-filter: blur(64px);
+  }
+
+  /* Glassmorphism utilities */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Text gradient utilities */
+  .text-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
 }
