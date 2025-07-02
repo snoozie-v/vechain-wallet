@@ -23,7 +23,7 @@ const App: React.FC = () => (
         </div>
         
         <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent mb-4">
-          Win 10k $SHT
+          10k $SHT per entry
         </h1>
         
         <p className="text-xl text-blue-100 mb-2 font-light">

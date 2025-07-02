@@ -15,11 +15,11 @@ export function VeChainProvider({ children }: VeChainProviderProps) {
         delegateAllTransactions: false,
       }}
       loginMethods={[
-        { method: 'vechain', gridColumn: 4 },
+        // { method: 'vechain', gridColumn: 4 },
         { method: 'dappkit', gridColumn: 4 }
       ]}
       dappKit={{
-        allowedWallets: ['veworld', 'wallet-connect', 'sync2'],
+        allowedWallets: ['veworld'],
         walletConnectOptions: {
           projectId: MAINNET_WALLET_CONNECT_PROJECT_ID,
           metadata: {
