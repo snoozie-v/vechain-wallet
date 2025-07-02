@@ -1,0 +1,176 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# VeChain Kit MCP Rules (Context7)
+
+## Installation
+
+Install VeChain Kit and its peer dependencies:
+```bash
+yarn add @vechain/vechain-kit @tanstack/react-query@"^5.64.2" @chakra-ui/react@"^2.8.2" @vechain/dapp-kit-react@"1.5.0"
+```
+
+## Provider Setup
+
+Wrap your app with `VeChainKitProvider` to enable wallet connection, fee delegation, and login methods:
+```typescript
+import VeChainKitProvider from '@vechain/vechain-kit';
+
+export function VeChainKitProviderWrapper({ children }) {
+  return (
+    <VeChainKitProvider
+      feeDelegation={{
+        delegatorUrl: process.env.NEXT_PUBLIC_DELEGATOR_URL!,
+        delegateAllTransactions: true,
+      }}
+      loginMethods=[
+        { method: 'vechain', gridColumn: 4 },
+        { method: 'dappkit', gridColumn: 4 }
+      ]
+      dappKit={{
+        allowedWallets: ['veworld', 'wallet-connect', 'sync2'],
+        walletConnectOptions: {
+          projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID!,
+          metadata: {
+            name: 'Your App Name',
+            description: 'This is the description of your app visible in VeWorld upon connection request.',
+            url: typeof window !== 'undefined' ? window.location.origin : '',
+            icons: ['https://path-to-logo.png']
+          }
+        }
+      }}
+      darkMode={true}
+      language="en"
+      network={{ type: 'main' }}
+    >
+      {children}
+    </VeChainKitProvider>
+  );
+}
+```
+
+For Next.js, use dynamic import to ensure client-side rendering:
+```typescript
+import dynamic from 'next/dynamic';
+const VeChainKitProvider = dynamic(
+  async () => (await import('@vechain/vechain-kit')).VeChainKitProvider,
+  { ssr: false },
+);
+```
+
+## Wallet Connection & UI
+
+Use the built-in `WalletButton` for automatic connection/profile UI:
+```typescript
+import { WalletButton } from '@vechain/vechain-kit';
+
+export function Page() {
+  return <WalletButton />;
+}
+```
+
+Or create a custom connect/account button:
+```typescript
+import { useConnectModal, useAccountModal, useWallet } from '@vechain/vechain-kit';
+
+export function Page() {
+  const { connection } = useWallet();
+  const { open: openConnectModal } = useConnectModal();
+  const { open: openAccountModal } = useAccountModal();
+
+  if (!connection.isConnected) {
+    return <button onClick={openConnectModal}> Connect </button>;
+  }
+  return <button onClick={openAccountModal}> View Account </button>;
+}
+```
+
+## Accessing Wallet State
+
+Use the `useWallet` hook for wallet/account info:
+```typescript
+import { useWallet } from '@vechain/vechain-kit';
+
+const { account, connectedWallet, smartAccount, connection, disconnect } = useWallet();
+```
+
+## Sending Transactions
+
+Use the `useSendTransaction` hook for blockchain transactions:
+```typescript
+import { useSendTransaction, getConfig } from '@vechain/vechain-kit';
+import { IB3TR__factory } from '@vechain/vechain-kit/contracts';
+import { humanAddress } from '@vechain/vechain-kit/utils';
+import { useMemo, useCallback } from 'react';
+
+const b3trMainnetAddress = getConfig('main').b3trContractAddress;
+const clauses = useMemo(() => [{
+  to: b3trMainnetAddress,
+  value: '0x0',
+  data: IB3TR__factory.createInterface().encodeFunctionData('transfer', [
+    '0x0', // receiver
+    '0',   // amount
+  ]),
+  comment: `Transfer 0 B3TR to ${humanAddress('0x0')}`,
+}], []);
+
+const { sendTransaction, status, txReceipt, resetStatus, isTransactionPending, error } = useSendTransaction({
+  signerAccountAddress: account?.address ?? '',
+});
+
+const handleTransaction = useCallback(async () => {
+  await sendTransaction(clauses);
+}, [sendTransaction, clauses]);
+```
+
+## Querying Token Balances
+
+Use the provided hooks for token balances:
+```typescript
+import { useGetB3trBalance } from '@vechain/vechain-kit';
+const { data: balance, isLoading, isError } = useGetB3trBalance('0x...');
+```
+
+## Transaction Modal
+
+The transaction modal is automatically managed by the `useSendTransaction` hook. You can open it manually if needed.
+
+## Error Handling
+
+- All hooks provide `error` and `status` fields.
+- Use try/catch for async transaction calls.
+- Use `resetStatus` to clear transaction state.
+
+
+
+## Directory Structure (Recommended)
+```
+lib/
+  vechain/           # VeChain-specific utilities
+components/
+  wallet/            # Wallet UI components
+hooks/
+  use-wallet.ts      # Wallet state hook
+  use-send-transaction.ts # Transaction hook
+pages/
+  _app.tsx           # App entry
+  index.tsx          # Home page
+```
+
+## Best Practices
+- Always wrap your app in `VeChainKitProvider`.
+- Use provided hooks for wallet, transaction, and queries.
+- Use the built-in modal and UI components for best UX.
+- Handle errors and transaction status in your UI.
+- Use environment variables for sensitive config (delegator URL, WalletConnect project ID).
+- Test your integration with the provided E2E and unit tests.
+
+## References
+- [Official VeChain Kit Docs](mdc:https:/github.com/vechain/vechain-kit)
+- [Sample Next.js App](mdc:https:/github.com/vechain/vechain-kit/tree/main/examples/sample-next-privy-app)
+
+
+
+

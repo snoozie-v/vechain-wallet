@@ -1,22 +1,69 @@
 import React from 'react';
-import EnterLotteryForm from './components/EnterLotteryForm';
-import WalletConnection from './components/WalletConnection';
-import Footer from './components/Footer';
+import { Header } from './components/layout/Header';
+import { EnterLotteryForm } from './components/forms/EnterLotteryForm';
+import { Footer } from './components/layout/Footer';
+import { LotteryStatusCard } from './components/data-display/LotteryStatusCard';
 
-const App: React.FC = () => {
-  return (
-      <div>
-          <WalletConnection />
-          <div style={{ textAlign: "center" }}>
-            <h2 >Enter for 10k $SHT</h2>
-            <h4 >Winner pulled on Sundays 4pm UTC</h4>
-            <p> 90% of prize distributed to one winner</p>
-            <p> 10% of prize pool to be burned</p>
+const App: React.FC = () => (
+  <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+    {/* Animated background elements */}
+    <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+      <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+      <div className="absolute top-40 left-1/2 transform -translate-x-1/2 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <Header />
+    
+    <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-12 relative z-10">
+      {/* Hero Section */}
+      <div className="text-center mb-16">
+        <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full mb-6">
+          <span className="text-purple-300 text-sm font-medium">🎲 Weekly Lottery</span>
+        </div>
+        
+        <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent mb-4">
+          Win 10k $SHT
+        </h1>
+        
+        <p className="text-xl text-blue-100 mb-2 font-light">
+          Winner drawn every Sunday at 4pm UTC
+        </p>
+        
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 text-blue-200">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="text-sm">90% to winner</span>
           </div>
-          <EnterLotteryForm />
-          <Footer />
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+            <span className="text-sm">10% burned forever</span>
+          </div>
+        </div>
       </div>
-  );
-};
+      
+      {/* Cards Section */}
+      <div className="flex flex-col xl:flex-row items-start justify-center gap-8 max-w-5xl mx-auto mb-0">
+        <div className="w-full xl:w-auto">
+          <LotteryStatusCard />
+        </div>
+        <div className="w-full xl:w-auto">
+          <EnterLotteryForm />
+        </div>
+      </div>
+      
+      {/* Decorative elements */}
+      <div className="mt-12 text-center">
+        <div className="inline-flex items-center gap-4 text-blue-300/60">
+          <div className="h-px bg-gradient-to-r from-transparent via-blue-400/30 to-transparent w-20"></div>
+          <span className="text-xs font-medium">POWERED BY VECHAIN</span>
+          <div className="h-px bg-gradient-to-r from-transparent via-blue-400/30 to-transparent w-20"></div>
+        </div>
+      </div>
+    </main>
+    
+    <Footer />
+  </div>
+);
 
 export default App;

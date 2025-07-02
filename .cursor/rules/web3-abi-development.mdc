@@ -1,0 +1,326 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Web3 ABI Development Rules
+
+## Overview
+When given an ABI, follow these patterns to create type-safe hooks and UI components using TanStack Query, VeChain Kit, and shadcn/ui.
+
+## Hook Development Patterns
+
+### View Functions (Read Operations)
+Use the `useMultiCall` pattern from [use-multi-call.ts](mdc:front-end/src/hooks/core/use-multi-call.ts):
+
+```typescript
+// Pattern: use-{contract-name}-{function-name}.ts
+export function useGetTokenBalance(address?: string) {
+  const contractClauses = useMemo(() => {
+    if (!address) return [];
+    
+    return [{
+      clause: {
+        to: TOKEN_CONTRACT_ADDRESS,
+        value: '0x0',
+        data: TokenABI.encodeFunctionData('balanceOf', [address])
+      },
+      contractInterface: TokenABI,
+      method: 'balanceOf',
+      args: [address]
+    }];
+  }, [address]);
+
+  return useMultiCall({
+    queryKey: ['tokenBalance', address],
+    contractClauses,
+    enabled: !!address,
+    transformResponse: (responses) => {
+      if (!responses?.[0]) return null;
+      return responses[0][0]; // First response, first return value
+    }
+  });
+}
+```
+
+### Mutate Functions (Write Operations)
+Use the `useBuildTransaction` pattern from [use-build-transaction.ts](mdc:front-end/src/hooks/core/use-build-transaction.ts):
+
+```typescript
+// Pattern: use-{contract-name}-{action}.ts
+export function useTransferToken() {
+  const clauseBuilder = useCallback((params: {
+    to: string;
+    amount: string;
+  }) => {
+    return [{
+      to: TOKEN_CONTRACT_ADDRESS,
+      value: '0x0',
+      data: TokenABI.encodeFunctionData('transfer', [params.to, params.amount]),
+      comment: `Transfer ${params.amount} tokens to ${params.to}`
+    }];
+  }, []);
+
+  return useBuildTransaction({
+    clauseBuilder,
+    refetchQueryKeys: [['tokenBalance']],
+    invalidateCache: true
+  });
+}
+```
+
+## UI Component Patterns
+
+### Form Structure with shadcn
+```typescript
+// Pattern: {ContractName}ManagementCard.tsx
+import { useForm } from '@tanstack/react-form';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+export function TokenManagementCard() {
+  const form = useForm({
+    defaultValues: {
+      to: '',
+      amount: '',
+    }
+  });
+
+  const { sendTransaction } = useTransferToken();
+  const balance = useGetTokenBalance(account?.address);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Token Transfer</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form.Subscribe>
+          {(state) => (
+            <div className="space-y-4">
+              <form.Field name="to">
+                {(field) => (
+                  <div>
+                    <Label>Recipient Address</Label>
+                    <Input
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      placeholder="0x..."
+                    />
+                  </div>
+                )}
+              </form.Field>
+              
+              <form.Field name="amount">
+                {(field) => (
+                  <div>
+                    <Label>Amount</Label>
+                    <Input
+                      type="number"
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      placeholder="0.0"
+                    />
+                  </div>
+                )}
+              </form.Field>
+
+              <Button 
+                onClick={() => sendTransaction(state.values)}
+                disabled={!state.values.to || !state.values.amount}
+              >
+                Transfer Tokens
+              </Button>
+            </div>
+          )}
+        </form.Subscribe>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+### Data Display Components
+```typescript
+export function TokenBalanceDisplay({ address }: { address?: string }) {
+  const { data: balance, isLoading, error } = useGetTokenBalance(address);
+
+  if (isLoading) return <Skeleton className="h-4 w-20" />;
+  if (error) return <span className="text-red-500">Error loading balance</span>;
+  
+  return (
+    <div className="flex items-center space-x-2">
+      <span className="text-sm text-muted-foreground">Balance:</span>
+      <Badge variant="secondary">{balance || '0'} Tokens</Badge>
+    </div>
+  );
+}
+```
+
+## Page Structure
+
+### Standalone Contract Pages
+```typescript
+// Pattern: app/{contract-name}/page.tsx
+export default function TokenContractPage() {
+  return (
+    <div className="container mx-auto py-6">
+      <div className="grid gap-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Token Contract</h1>
+          <WalletButton />
+        </div>
+        
+        <div className="grid gap-6 md:grid-cols-2">
+          <TokenManagementCard />
+          <TokenInfoCard />
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+### Tabbed Interface for Multiple Functions
+```typescript
+// Pattern: Multi-function contract interface
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+export function MultiContractInterface() {
+  return (
+    <Tabs defaultValue="transfer">
+      <TabsList className="grid w-full grid-cols-3">
+        <TabsTrigger value="transfer">Transfer</TabsTrigger>
+        <TabsTrigger value="approve">Approve</TabsTrigger>
+        <TabsTrigger value="mint">Mint</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="transfer">
+        <TokenTransferCard />
+      </TabsContent>
+      
+      <TabsContent value="approve">
+        <TokenApprovalCard />
+      </TabsContent>
+      
+      <TabsContent value="mint">
+        <TokenMintCard />
+      </TabsContent>
+    </Tabs>
+  );
+}
+```
+
+## File Organization
+
+### Directory Structure
+```
+hooks/
+  feature-transactions/
+    use-{contract-name}-{action}.ts     # Mutate hooks
+  queries/
+    use-{contract-name}-{view}.ts       # View hooks
+components/
+  contracts/
+    {contract-name}/
+      {ContractName}ManagementCard.tsx  # Main interface
+      {ContractName}InfoCard.tsx        # Display component
+      index.ts                          # Exports
+app/
+  contracts/
+    {contract-name}/
+      page.tsx                          # Standalone page
+```
+
+## Type Safety Patterns
+
+### Contract Configuration
+```typescript
+// lib/contracts/{contract-name}.ts
+export const CONTRACT_CONFIG = {
+  address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!,
+  abi: ContractABI,
+  name: 'TokenContract'
+} as const;
+
+export type ContractFunction = keyof typeof ContractABI;
+```
+
+### Parameter Validation
+```typescript
+import { z } from 'zod';
+
+const TransferSchema = z.object({
+  to: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid address'),
+  amount: z.string().min(1, 'Amount required')
+});
+
+type TransferParams = z.infer<typeof TransferSchema>;
+```
+
+## Error Handling
+
+### Transaction Error Display
+```typescript
+export function TransactionErrorAlert({ error }: { error?: Error }) {
+  if (!error) return null;
+  
+  return (
+    <Alert variant="destructive">
+      <AlertCircle className="h-4 w-4" />
+      <AlertTitle>Transaction Failed</AlertTitle>
+      <AlertDescription>{error.message}</AlertDescription>
+    </Alert>
+  );
+}
+```
+
+### Loading States
+```typescript
+export function TransactionButton({ isLoading, children, ...props }) {
+  return (
+    <Button disabled={isLoading} {...props}>
+      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      {children}
+    </Button>
+  );
+}
+```
+
+## Integration with VeChain Kit
+
+### Required Provider Setup
+Reference the provider setup in [chakra-provider.tsx](mdc:front-end/src/app/providers/chakra-provider.tsx) and ensure VeChainKitProvider wraps the application.
+
+### Transaction Patterns
+Always use the established transaction flow:
+1. Build clauses with contract interface
+2. Use `useBuildTransaction` for state management
+3. Handle success/failure callbacks
+4. Invalidate relevant queries on success
+
+## Best Practices
+
+1. **Type Safety**: Always define proper TypeScript interfaces for function parameters
+2. **Query Keys**: Use consistent, hierarchical query keys for cache management
+3. **Error Boundaries**: Wrap contract interactions in proper error handling
+4. **Loading States**: Always provide loading feedback for async operations
+5. **Accessibility**: Use proper ARIA labels and semantic HTML
+6. **Mobile First**: Design responsive interfaces using Tailwind breakpoints
+7. **Contract Validation**: Validate all contract addresses and parameters before execution
+
+## Testing Patterns
+
+```typescript
+// {contract-name}.test.tsx
+describe('TokenContract Hooks', () => {
+  it('should fetch token balance', async () => {
+    const { result } = renderHook(() => useGetTokenBalance('0x123...'));
+    
+    await waitFor(() => {
+      expect(result.current.data).toBeDefined();
+    });
+  });
+});
+```
