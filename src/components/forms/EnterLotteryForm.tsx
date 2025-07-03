@@ -174,7 +174,7 @@ export function EnterLotteryForm() {
             onClick={handleBuyTickets}
             disabled={isBuying || ticketCount < 1}
             variant="success"
-            className="w-full h-14 text-lg font-bold transition-all duration-200 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white border-0 shadow-lg hover:shadow-green-500/25 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full h-14 text-lg font-bold transition-all duration-200 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white border-4 border-white p-1 ring-2 ring-white/50 shadow-lg hover:shadow-green-500/25 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {isBuying && <Loader className="mr-2 h-5 w-5" />}
             {isBuying ? 'Processing...' : `🎯 Buy ${ticketCount} Ticket${ticketCount > 1 ? 's' : ''}`}
