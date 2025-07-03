@@ -68,7 +68,7 @@ export function LotteryStatusCard() {
   );
 
   return (
-    <Card className="w-full max-w-md min-w-[400px]">
+    <Card className="w-full max-w-md min-w-0 sm:min-w-[350px] lg:min-w-[400px]">
       <div className="flex flex-col space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

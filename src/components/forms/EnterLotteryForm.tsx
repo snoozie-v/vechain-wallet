@@ -80,7 +80,7 @@ export function EnterLotteryForm() {
 
   if (!address) {
     return (
-      <Card className="w-full max-w-md min-w-[400px]">
+      <Card className="w-full max-w-md min-w-0 sm:min-w-[350px] lg:min-w-[400px]">
         <div className="text-center py-12">
           <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-400/30 flex items-center justify-center">
             <span className="text-3xl">🔗</span>
@@ -96,7 +96,7 @@ export function EnterLotteryForm() {
   }
 
   return (
-    <Card className="w-full max-w-md min-w-[400px]">
+    <Card className="w-full max-w-md min-w-0 sm:min-w-[350px] lg:min-w-[400px]">
       <div className="space-y-8">
         {/* Header */}
         <div className="flex items-center gap-3">

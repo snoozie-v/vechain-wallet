@@ -15,18 +15,18 @@ const App: React.FC = () => (
 
     <Header />
     
-    <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-12 relative z-10">
+    <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-12 relative z-10 overflow-x-hidden">
       {/* Hero Section */}
       <div className="text-center mb-16">
         <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full mb-6">
           <span className="text-purple-300 text-sm font-medium">🎲 Weekly Lottery</span>
         </div>
         
-        <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent mb-4">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent mb-4">
           10k $SHT per entry
         </h1>
         
-        <p className="text-xl text-blue-100 mb-2 font-light">
+        <p className="text-lg sm:text-xl text-blue-100 mb-2 font-light">
           Winner drawn every Sunday at 4pm UTC
         </p>
         
@@ -43,11 +43,11 @@ const App: React.FC = () => (
       </div>
       
       {/* Cards Section */}
-      <div className="flex flex-col xl:flex-row items-start justify-center gap-8 max-w-5xl mx-auto mb-0">
-        <div className="w-full xl:w-auto">
+      <div className="flex flex-col xl:flex-row items-center xl:items-start justify-center gap-6 xl:gap-8 w-full mb-0">
+        <div className="w-full max-w-md xl:w-auto">
           <LotteryStatusCard />
         </div>
-        <div className="w-full xl:w-auto">
+        <div className="w-full max-w-md xl:w-auto">
           <EnterLotteryForm />
         </div>
       </div>
