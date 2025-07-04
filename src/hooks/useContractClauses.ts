@@ -77,6 +77,13 @@ export function useWinProbabilityClauses(address?: string): MultiCallClause[] {
           args: [address],
           comment: `Get win probability for ${address}`
         },
+        {
+          contractAddress: LOTTERY_ADDRESS,
+          contractInterface: lotteryABI,
+          method: 'getPlayers',
+          args: [],
+          comment: `Get players for ${address}`,
+        }
       ];
 
       return clauses;

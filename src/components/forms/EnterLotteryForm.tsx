@@ -19,12 +19,18 @@ export function EnterLotteryForm() {
   const [showConfetti, setShowConfetti] = React.useState(false);
   
   const { mutateAsync: buyTickets, isPending: isBuying, error: buyError, isSuccess, data: txData } = useBuyLotteryTickets(address);
-  const { data: winProbability, isLoading: isLoadingProbability, refetch: refetchWin } = useWinProbability(address);
+  const { data: winProbabilityData, isLoading: isLoadingProbability, refetch: refetchWin } = useWinProbability(address);
 
-  // Safely handle winProbability with proper fallback
+  // Safely handle winProbability and userEntries with proper fallback
   const safeWinProbability = useMemo(() => {
-    return typeof winProbability === 'number' && !isNaN(winProbability) ? winProbability : 0;
-  }, [winProbability]);
+    return typeof winProbabilityData?.winProbability === 'number' && !isNaN(winProbabilityData.winProbability)
+      ? winProbabilityData.winProbability
+      : 0;
+  }, [winProbabilityData]);
+
+  const safeUserEntries = useMemo(() => {
+    return winProbabilityData?.userEntries || '0';
+  }, [winProbabilityData]);
 
   const totalCost = useMemo(() => {
     return calculateTicketCost(ticketCount, ENTRY_AMOUNT);
@@ -106,15 +112,16 @@ export function EnterLotteryForm() {
           <h2 className="text-xl font-semibold text-white">Buy Lottery Tickets</h2>
         </div>
 
-        {/* Win Probability Section */}
+        {/* Win Probability & Entries Section */}
         {isLoadingProbability ? renderWinProbabilitySkeleton() : (
           <div className="space-y-4">
             <div className="text-center">
               <div className="mb-2">
-                <span className="text-blue-200/70 text-sm">Your Win Probability</span>
+                <span className="text-blue-200/70 text-sm">Your Win Probability & Entries</span>
               </div>
-              <div className="text-3xl font-bold text-white mb-4">
-                {safeWinProbability.toFixed(2)}%
+              <div className="text-3xl font-bold text-white mb-4 flex justify-center gap-4">
+                <span>{safeWinProbability.toFixed(2)}%</span>
+                <span>({safeUserEntries} {safeUserEntries === '1' ? 'Entry' : 'Entries'})</span>
               </div>
               
               <div className="relative w-full bg-white/10 rounded-full h-4 overflow-hidden backdrop-blur-sm">
