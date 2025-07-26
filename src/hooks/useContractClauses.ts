@@ -1,97 +1,70 @@
 import { useMemo } from 'react';
-import lotteryABI from '../contracts/abi/lotteryABI';
 import shtABI from '../contracts/abi/shtABI';
-import { LOTTERY_ADDRESS, SHT_ADDRESS } from '../constants/addresses';
+import hangManABI from '../contracts/abi/hangManABI';
+import { SHT_ADDRESS, hangManAddress, tokenAddress, zeroAddress } from '../constants/addresses';
 import type { MultiCallClause } from './useMultiCall';
+import { useWallet } from '@vechain/vechain-kit';
 
-/**
- * Hook to create contract clauses for lottery status data
- */
-export function useLotteryStatusClauses(): MultiCallClause[] {
+// Hook to create contract clauses for hangman status data
+export function useHangManStatusClauses(): MultiCallClause[] {
+  const { account } = useWallet();
+  const playerAddress = account?.address || zeroAddress;
   return useMemo(() => {
     try {
       const clauses: MultiCallClause[] = [
-        // Get balance
+        // Get entry fee
         {
-          contractAddress: LOTTERY_ADDRESS,
-          contractInterface: lotteryABI,
-          method: 'getBalance',
+          contractAddress: hangManAddress,
+          contractInterface: hangManABI,
+          method: 'entryFee',
           args: [],
-          comment: 'Get lottery balance'
+          comment: 'Get entry fee'
         },
-        // Get player count
+        // Get token balance
         {
-          contractAddress: LOTTERY_ADDRESS,
-          contractInterface: lotteryABI,
-          method: 'getPlayerCount',
-          args: [],
-          comment: 'Get total player count'
+          contractAddress: tokenAddress,
+          contractInterface: shtABI,
+          method: 'balanceOf',
+          args: [hangManAddress],
+          comment: 'Get token balance'
         },
-        // Get unique player count
+        // Get games
         {
-          contractAddress: LOTTERY_ADDRESS,
-          contractInterface: lotteryABI,
-          method: 'getUniquePlayerCount',
-          args: [],
-          comment: 'Get unique player count'
+          contractAddress: hangManAddress,
+          contractInterface: hangManABI,
+          method: 'games',
+          args: [playerAddress],
+          comment: 'Get games'
         },
-        // Get last winner
+        // Get displayed word
         {
-          contractAddress: LOTTERY_ADDRESS,
-          contractInterface: lotteryABI,
-          method: 'getLastWinner',
+          contractAddress: hangManAddress,
+          contractInterface: hangManABI,
+          method: 'getDisplayedWord',
           args: [],
-          comment: 'Get last winner address'
+          comment: 'Get displayed word'
         },
-        // Get last winning amount
+        // Get wrong Guesses
         {
-          contractAddress: LOTTERY_ADDRESS,
-          contractInterface: lotteryABI,
-          method: 'getLastWinningAmount',
+          contractAddress: hangManAddress,
+          contractInterface: hangManABI,
+          method: 'getWrongGuesses',
           args: [],
-          comment: 'Get last winning amount'
+          comment: 'Get wrong guesses'
+        },
+        { contractAddress: hangManAddress,
+          contractInterface: hangManABI,
+          method: 'getGuessedLetters',
+          args: [],
+          comment: 'Get guessed letters'
         },
       ];
-
       return clauses;
     } catch (error) {
-      console.error('Error building lottery status clauses:', error);
+      console.error('Error building hangman status clauses:', error);
       return [];
     }
   }, []);
-}
-
-/**
- * Hook to create contract clause for win probability
- */
-export function useWinProbabilityClauses(address?: string): MultiCallClause[] {
-  return useMemo(() => {
-    if (!address) return [];
-
-    try {
-      const clauses: MultiCallClause[] = [
-        {
-          contractAddress: LOTTERY_ADDRESS,
-          contractInterface: lotteryABI,
-          method: 'getWinProbability',
-          args: [address],
-          comment: `Get win probability for ${address}`
-        },
-        {
-          contractAddress: LOTTERY_ADDRESS,
-          contractInterface: lotteryABI,
-          method: 'getPlayers',
-          args: [],
-          comment: `Get players for ${address}`,
-        }
-      ];
-
-      return clauses;
-    } catch (error) {
-      console.error('Error building win probability clauses:', error);
-      return [];
-    }
-  }, [address]);
 }
 
 /**

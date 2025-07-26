@@ -1,8 +1,9 @@
 import React from 'react';
 import { Header } from './components/layout/Header';
-import { EnterLotteryForm } from './components/forms/EnterLotteryForm';
 import { Footer } from './components/layout/Footer';
-import { LotteryStatusCard } from './components/data-display/LotteryStatusCard';
+import { HangManStatusCard } from './components/data-display/HangManStatusCard';
+import { GuessHangmanForm } from './components/forms/HangManForm';
+
 
 const App: React.FC = () => (
   <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
@@ -19,38 +20,35 @@ const App: React.FC = () => (
       {/* Hero Section */}
       <div className="text-center mb-16">
         <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full mb-6">
-          <span className="text-purple-300 text-sm font-medium">🎲 Weekly Lottery</span>
-        </div>
-        
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent mb-4">
-          10k $SHT per entry
-        </h1>
-        
+          <span className="text-purple-300 text-lg font-medium">🎯 Hanging SHT</span>
+        </div>     
+        {/* <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent mb-4">
+          10k $SHT entry fee per game
+        </h1>       
         <p className="text-lg sm:text-xl text-blue-100 mb-2 font-light">
-          Winner drawn every Sunday at 4pm UTC
-        </p>
-        
+          Wager up to 100k SHT - 10% burned forever
+        </p> */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 text-blue-200">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-sm">90% to winner</span>
+            <span className="text-sm">Win: Receive 2x entry amount</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
-            <span className="text-sm">10% burned forever</span>
+            <span className="text-sm">Loss: Lose entry</span>
           </div>
         </div>
       </div>
-      
-      {/* Cards Section */}
+            {/* Cards Section */}
       <div className="flex flex-col xl:flex-row items-center xl:items-start justify-center gap-6 xl:gap-8 w-full mb-0">
         <div className="w-full max-w-md xl:w-auto">
-          <LotteryStatusCard />
+          <HangManStatusCard />
         </div>
         <div className="w-full max-w-md xl:w-auto">
-          <EnterLotteryForm />
+          <GuessHangmanForm />
         </div>
       </div>
+
       
       {/* Decorative elements */}
       <div className="mt-12 text-center">

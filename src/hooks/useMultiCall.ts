@@ -1,10 +1,10 @@
-
 import { QueryKey, useQuery } from "@tanstack/react-query";
 import { ABIContract } from "@vechain/sdk-core";
 import { ContractCallResult, ContractClause } from "@vechain/sdk-network";
 import { useMemo } from "react";
 import { Interface } from "ethers";
 import { parseAbi } from "../utils/parseABI";
+import { decodeString, decodeUint256 } from "../utils/decoders"; // Keep import, but not used unless SDK decoding fails
 import { useThor } from "@vechain/vechain-kit";
 
 export interface MultiCallClause {
@@ -22,9 +22,10 @@ export interface UseMultiCallParams<TResponse = any> {
     mapResponse?: (responses: any[]) => TResponse;
     staleTime?: number;
     revision?: number | string;
+    caller?: string; // New: Optional caller for msg.sender simulation
 }
 
-export function useMultiCall<TResponse = any>({ clauses, queryKey, enabled = true, mapResponse, staleTime = 60 * 1000, revision }: UseMultiCallParams<TResponse>) {
+export function useMultiCall<TResponse = any>({ clauses, queryKey, enabled = true, mapResponse, staleTime = 60 * 1000, revision, caller }: UseMultiCallParams<TResponse>) {
     const thorClient = useThor();
 
     const contractClauses = useMemo(() => {
@@ -53,6 +54,7 @@ export function useMultiCall<TResponse = any>({ clauses, queryKey, enabled = tru
                         },
                     } as ContractClause;
                 } catch (error) {
+                    console.error(`Error building clause ${index} (${clause.method}):`, error); // New: Log errors for skipped clauses
                     return null;
                 }
             })
@@ -66,14 +68,22 @@ export function useMultiCall<TResponse = any>({ clauses, queryKey, enabled = tru
             if (!thorClient || !contractClauses?.length) return null as TResponse;
 
             try {
-                const callOptions = revision ? { revision: revision.toString() } : undefined;
+                const callOptions = {
+                    ...(revision ? { revision: revision.toString() } : {}),
+                    ...(caller ? { caller } : {}), // New: Pass caller to simulate msg.sender
+                };
                 const responses = await thorClient.contracts.executeMultipleClausesCall(contractClauses as any, callOptions);
-                const anyFailed = responses.filter((response: ContractCallResult) => !response.success);
-                if (anyFailed.length > 0) {
-                    throw new Error(`${anyFailed.map((response) => response.result.errorMessage).join(", ")}`);
-                }
 
-                const decodedResponses = responses.map((response: ContractCallResult) => response.result.array);
+                // Decode responses, handling failures gracefully
+                const decodedResponses = responses.map((response: ContractCallResult, index: number) => {
+                    if (!response.success) {
+                        console.warn(`Clause ${index} (${contractClauses[index].clause.comment || clauses[index].method}) failed: ${response.result.errorMessage}`);
+                        return null; // Return null for failed/reverted calls
+                    }
+
+                    return response.result.array;
+                });
+
                 if (!mapResponse) {
                     return decodedResponses as TResponse;
                 }

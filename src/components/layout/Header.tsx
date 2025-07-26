@@ -17,9 +17,9 @@ export function Header() {
             </div>
             <div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-                SHT Lotto
+                SHT Games
               </h1>
-              <p className="text-blue-200/70 text-xs font-medium">VeChain Lottery</p>
+              <p className="text-blue-200/70 text-xs font-medium">Powered by VeChain</p>
             </div>
           </div>
           

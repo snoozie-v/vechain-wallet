@@ -12,7 +12,7 @@ export function Footer() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
                 <span className="text-white font-bold text-sm">S</span>
               </div>
-              <span className="text-white font-semibold">SHT Lotto</span>
+              <span className="text-white font-semibold">Hanging SHT</span>
             </div>
 
             {/* Links */}
@@ -46,10 +46,10 @@ export function Footer() {
             {/* Copyright and disclaimer */}
             <div className="text-center space-y-1">
               <p className="text-blue-200/60 text-xs">
-                © 2024 SHT Lotto. Built on VeChain.
+                © 2025 Hanging SHT. Built on VeChain.
               </p>
               <p className="text-blue-200/50 text-xs max-w-md">
-                Please gamble responsibly. This is an experimental dApp.
+                Please play responsibly. This is an experimental dApp.
               </p>
             </div>
 

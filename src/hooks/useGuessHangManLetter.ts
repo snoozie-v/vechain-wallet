@@ -1,36 +1,37 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSendTransaction } from '@vechain/vechain-kit';
-import { buildBuyTicketsClauses, type BuyTicketsParams } from '../utils/transactions';
+import { buildGuessLetterClause } from '../utils/hangmanTransactions';
 import { useCallback } from 'react';
 
-export function useBuyLotteryTickets(address?: string) {
+interface GuessLetterParams {
+  letter: string;
+}
+
+export function useGuessHangmanLetter(address?: string) {
   const queryClient = useQueryClient();
   const { sendTransaction, ...rest } = useSendTransaction({
     signerAccountAddress: address || '',
   });
 
-  const clauseBuilder = useCallback(async (params: BuyTicketsParams) => {
-    return await buildBuyTicketsClauses(params);
+  const clauseBuilder = useCallback(async (params: GuessLetterParams) => {
+    return await buildGuessLetterClause(params);
   }, []);
 
   const mutation = useMutation({
-    mutationFn: async (params: BuyTicketsParams) => {
+    mutationFn: async (params: GuessLetterParams) => {
       if (!address) throw new Error('No address provided');
       
       const clauses = await clauseBuilder(params);
       return await sendTransaction(clauses);
     },
     onSuccess: () => {
-      // Invalidate all relevant queries
-      queryClient.invalidateQueries({ queryKey: ['lottery'] });
-      queryClient.invalidateQueries({ queryKey: ['sht', 'allowance'] });
-      queryClient.invalidateQueries({ queryKey: ['win-probability'] });
+      queryClient.invalidateQueries({ queryKey: ['hangman'] });
     },
   });
 
   return {
     ...mutation,
     ...rest,
-    buyTickets: mutation.mutateAsync,
+    guessLetter: mutation.mutateAsync,
   };
-} 
+}

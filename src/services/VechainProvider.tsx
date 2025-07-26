@@ -11,7 +11,7 @@ export function VeChainProvider({ children }: VeChainProviderProps) {
   return (
     <VeChainKitProvider
       feeDelegation={{
-        delegatorUrl: 'https://sponsor-mainnet.vechain.energy/by/441',
+        delegatorUrl: 'https://sponsor-testnet.vechain.energy/by/441',
         delegateAllTransactions: false,
       }}
       loginMethods={[
@@ -32,7 +32,7 @@ export function VeChainProvider({ children }: VeChainProviderProps) {
       }}
       darkMode={true}
       language="en"
-      network={{ type: 'main' }}
+      network={{ type: 'test' }}
     >
       {children}
     </VeChainKitProvider>
